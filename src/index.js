@@ -21,6 +21,7 @@ export default class Dubbo {
     this._version = version
     this._connected = false
     this._pendingServices = []
+    this._services = {}
 
     this._ip = ip.address()
     this._baseQuery = {

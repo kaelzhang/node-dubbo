@@ -14,7 +14,7 @@
 
 # dubbo
 
-Heavily based on [node-zookeeper-dubbo](https://github.com/p412726700/node-zookeeper-dubbo)
+Dubbo/dubbox client for node.js
 
 ## Install
 
@@ -25,7 +25,64 @@ $ npm install dubbo --save
 ## Usage
 
 ```js
-import dubbo from 'dubbo'
+import Dubbo from 'dubbo'
+
+const dubbo = new Dubbo({
+  application: 'my-application-name',
+  // parent node of dubbo
+  root: 'dubbo-test',
+  // dubbo version
+  version: '2.8.4',
+  zookeeper: {
+    host          : '10.0.0.100:2181',
+
+    // node-zookeeper-client createClient options
+    sessionTimeout: 30000,
+    spinDelay     : 1000,
+    retries       : 5
+  },
+  services: {
+    member: {
+      interface: 'me.kael.service.memberService',
+      timeout: 6000,
+      group,
+      version
+    }
+  }
+})
+
+// Use an already registered service
+dubbo
+// If a service is used before registered, an error will rejected
+.service('member')
+.invoke('login', {
+  $class: 'me.kael.member.dto.loginDTO',
+  $: {
+    mobile: {
+      $class: 'java.lang.String',
+      $: '18800008888'
+    },
+    password: {
+      $class: 'java.lang.String',
+      $: 'my-password'
+    }
+  }
+})
+.then(({
+  isSuccess
+}) => {
+  console.log('is successful', isSuccess)
+})
+
+
+// Register a new service
+dubbo
+.register('order', {
+  interface: 'me.kael.service.orderService'
+})
+.service('order')
+.invoke('create', ...)
+.then(...)
 ```
 
 ## License

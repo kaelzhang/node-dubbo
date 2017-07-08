@@ -171,7 +171,7 @@ export default class Service extends EventEmitter {
     .reverse()
   }
 
-  invoke (method, args) {
+  invoke (method, ...args) {
     if (!this._registered) {
       return reject(`service "this._name" must be registered before use`,
         'SERVICE_NOT_REGISTERED')
