@@ -6,9 +6,6 @@ import Zookeeper from 'node-zookeeper-client'
 import ip from 'ip'
 
 import Service from './service'
-import reg from './register'
-import decode from './decode'
-import {Encode} from './encode'
 
 
 export default class Dubbo {
