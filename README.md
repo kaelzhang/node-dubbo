@@ -14,7 +14,9 @@
 
 # dubbo
 
-Dubbo/dubbox client for node.js
+node.js dubbo/dubbox client with zookeeper support via dubbo default hessian protocol.
+
+想到这个项目基本上只给国人用，就破例稍微接地气一点，下面都写中文文档
 
 ## Install
 
@@ -29,18 +31,22 @@ import Dubbo from 'dubbo'
 
 const dubbo = new Dubbo({
   application: 'my-application-name',
-  // parent node of dubbo
+
+  // Dubbo 父节点名
   root: 'dubbo-test',
-  // dubbo version
+
+  // Dubbo 的版本
   version: '2.8.4',
   zookeeper: {
     host          : '10.0.0.100:2181',
 
-    // node-zookeeper-client createClient options
+    // node-zookeeper-client 的 createClient 方法的 options
     sessionTimeout: 30000,
     spinDelay     : 1000,
     retries       : 5
   },
+
+  // 需要注册的服务名，还可以使用 `dubbo.register` 方法来动态注册一个服务
   services: {
     member: {
       interface: 'me.kael.service.memberService',
@@ -51,10 +57,12 @@ const dubbo = new Dubbo({
   }
 })
 
-// Use an already registered service
-dubbo
-// If a service is used before registered, an error will rejected
-.service('member')
+
+// 如果一个服务没有注册就被调用，那么会收到一个 Promise.reject
+dubbo.service('member')
+
+// `'login'` 为方法名
+// invoke 方法可以接多个参数
 .invoke('login', {
   $class: 'me.kael.member.dto.loginDTO',
   $: {
@@ -75,9 +83,8 @@ dubbo
 })
 
 
-// Register a new service
-dubbo
-.register('order', {
+// 动态注册一个服务
+dubbo.register('order', {
   interface: 'me.kael.service.orderService'
 })
 .service('order')

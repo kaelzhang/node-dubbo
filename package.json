@@ -1,7 +1,7 @@
 {
   "name": "dubbo",
-  "version": "1.0.1",
-  "description": "dubbo",
+  "version": "1.0.2",
+  "description": "node.js dubbo/dubbox client with zookeeper support via dubbo default hessian protocol",
   "main": "lib/index.js",
   "scripts": {
     "build": "babel src --out-dir lib",
@@ -16,7 +16,13 @@
     "url": "git://github.com/kaelzhang/node-dubbo.git"
   },
   "keywords": [
-    "dubbo"
+    "dubbo",
+    "dubbox",
+    "zookeeper",
+    "client",
+    "dubbo-client",
+    "rpc",
+    "hessian"
   ],
   "engines": {
     "node": ">=4"
