@@ -21,8 +21,8 @@ function cleanVersion (version) {
   const suffix = splitted.slice(3)
 
   prefix.length = 3
-  prefix = prefix.map(x => x || 0)
-  return prefix.join(STR_DOT) + (
+
+  return prefix.map(x => x || '0').join(STR_DOT) + (
     suffix.length
       ? '-' + suffix.join(STR_DOT)
       : ''

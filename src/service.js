@@ -30,6 +30,8 @@ const CREATE_MODES = {
 export default class Service extends EventEmitter {
 
   constructor (name) {
+    super()
+
     this._name = name
     this._hosts = []
     this._methods = {}
@@ -40,8 +42,8 @@ export default class Service extends EventEmitter {
   // Register service informations
   register ({
     zookeeper,
-    {
-      interface,
+    options: {
+      interface: _interface,
       version,
       group,
       timeout = 6000
@@ -69,7 +71,7 @@ export default class Service extends EventEmitter {
     this._root = root
     this._encoder = new Encoder({
       dubboVersion,
-      interface,
+      interface: _interface,
       version,
       group,
       timeout

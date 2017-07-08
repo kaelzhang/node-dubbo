@@ -21,22 +21,22 @@ const ENUM_TYPE = {
 export default class Encoder {
   constructor ({
     dubboVersion,
-    interface,
+    interface: _interface,
     version,
     group,
     timeout
   }) {
 
     this._dubboVersion = dubboVersion
-    this._interface = interface
+    this._interface = _interface
     this._version = version
     this._group = group
     this._timeout = timeout
     this._gte280 = gte(dubboVersion, '2.8.0')
 
     const implicitArgs = {
-      interface,
-      path: interface,
+      interface: _interface,
+      path: _interface,
       timeout
     }
 

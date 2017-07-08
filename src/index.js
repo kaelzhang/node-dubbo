@@ -80,7 +80,7 @@ export default class Dubbo {
   }
 
   _consumerPath ({
-    interface,
+    interface: _interface,
     version,
     group
   }) {
@@ -88,10 +88,10 @@ export default class Dubbo {
     const path = url.format({
       protocol: 'consumer',
       slashes : 'true',
-      host    : `${this._ip}/${interface}`,
+      host    : `${this._ip}/${_interface}`,
       query   : {
         ...this._baseQuery,
-        interface,
+        _interface,
         revision: version,
         version,
         group,
@@ -99,13 +99,13 @@ export default class Dubbo {
       }
     })
 
-    return `/${this._root}/${interface}/consumers/${encodeURIComponent(path)}`
-  },
+    return `/${this._root}/${_interface}/consumers/${encodeURIComponent(path)}`
+  }
 
   _providerPath ({
-    interface
+    interface: _interface
   }) {
 
-    return `/${this._root}/${interface}/providers`
+    return `/${this._root}/${_interface}/providers`
   }
 }
