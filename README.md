@@ -14,7 +14,7 @@
 
 # dubbo
 
-<!-- description -->
+Heavily based on [node-zookeeper-dubbo](https://github.com/p412726700/node-zookeeper-dubbo)
 
 ## Install
 
@@ -25,7 +25,7 @@ $ npm install dubbo --save
 ## Usage
 
 ```js
-const dubbo = require('dubbo')
+import dubbo from 'dubbo'
 ```
 
 ## License
