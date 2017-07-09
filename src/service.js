@@ -2,11 +2,16 @@ import {
   reject,
   error
 } from './utils'
-
 import Encoder from './encoder'
+import decode from './decode'
 
 import {EventEmitter} from 'events'
+import qs from 'querystring'
 import url from 'url'
+import net from 'net'
+
+import _debug from 'debug'
+const debug = _debug('dubbo')
 
 
 const CREATE_MODES = {
@@ -52,15 +57,14 @@ export default class Service extends EventEmitter {
     path: {
       consumer,
       provider
-    },
-    root
+    }
   }) {
-
-    this._registered = true
 
     if (this._registered) {
       return
     }
+
+    this._registered = true
 
     this._zookeeper = zookeeper
     this._version = version
@@ -68,7 +72,6 @@ export default class Service extends EventEmitter {
     this._consumer = consumer
     this._provider = provider
     this._err = null
-    this._root = root
     this._encoder = new Encoder({
       dubboVersion,
       interface: _interface,
@@ -158,8 +161,10 @@ export default class Service extends EventEmitter {
     this._hosts = available.map(zoo => url.parse(Object.keys(zoo)[0]).host)
 
     const methodsHash = {}
-    zoo.methods.split(',').forEach(method => {
-      methodsHash[method] = true
+    available.forEach(zoo => {
+      zoo.methods.split(',').forEach(method => {
+        methodsHash[method] = true
+      })
     })
 
     this._methods = methodsHash
@@ -191,6 +196,10 @@ export default class Service extends EventEmitter {
   _invoke (method, args) {
     if (this._setupError) {
       return Promise.reject(this._setupError)
+    }
+
+    if (!this._methods[method]) {
+      return reject(`"${method}" is not an available method`)
     }
 
     const buffer = this._encoder.encode(method, args)
@@ -236,7 +245,7 @@ export default class Service extends EventEmitter {
       })
 
       client.on('close', function (err) {
-        if (!err) {
+        if (err) {
           return reject(err)
         }
 

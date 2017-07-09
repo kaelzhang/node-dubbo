@@ -1,6 +1,5 @@
 import net from 'net'
 import url from 'url'
-import qs from 'querystring'
 
 import Zookeeper from 'node-zookeeper-client'
 import ip from 'ip'
@@ -32,11 +31,6 @@ export default class Dubbo {
       side       : 'consumer'
     }
 
-    Object.keys(services).forEach(name => {
-      const options = services[name]
-      this.register(name, options)
-    })
-
     const zk = this._zookeeper
              = Zookeeper.createClient(zookeeper.host, zookeeper)
 
@@ -45,6 +39,11 @@ export default class Dubbo {
       this._pendingServices.forEach(name => {
         this._services[name].setup()
       })
+    })
+
+    Object.keys(services).forEach(name => {
+      const options = services[name]
+      this.register(name, options)
     })
   }
 
@@ -92,7 +91,7 @@ export default class Dubbo {
       host    : `${this._ip}/${_interface}`,
       query   : {
         ...this._baseQuery,
-        _interface,
+        interface: _interface,
         revision: version,
         version,
         group,

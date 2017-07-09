@@ -16,7 +16,17 @@
 
 node.js dubbo/dubbox client with zookeeper support via dubbo default hessian protocol.
 
-想到这个项目基本上只给国人用，就破例稍微接地气一点，下面都写中文文档
+想到这个项目基本上只给国人用，就破例稍微接地气一点，下面都写中文文档。
+
+目前仍然在紧锣密鼓的**开发阶段**，请不要在生产环境使用。
+
+预计完成时间为 2017 年 7 月 14 日，届时会包含：
+
+- TCP 长连接及长连接池
+- 动态的服务注册
+- 不再使用 setTimeout 来确保启动阶段的完成，完全使用 Promise
+
+第一期是基于 node-zookeeper-dubbo 的核心逻辑
 
 ## Install
 

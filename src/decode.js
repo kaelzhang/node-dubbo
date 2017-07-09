@@ -1,4 +1,6 @@
-import DecoderV2 from 'hessian.js'
+import {
+  DecoderV2
+} from 'hessian.js'
 
 const RESPONSE_OK             = 20
 const RESPONSE_WITH_EXCEPTION = 0
