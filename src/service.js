@@ -208,17 +208,17 @@ export default class Service extends EventEmitter {
       const client = new net.Socket()
       const chunks = []
       let heap
-      let bl       = 16
+      let bl = 16
 
-      client.connect(...this._selectHost(), function () {
+      client.connect(...this._selectHost(), () => {
         client.write(buffer)
       })
 
-      client.on('error', function (err) {
+      client.on('error', err => {
         this._initProvider()
         .then(
           () => {
-            client.connect(...this._selectHost(), function () {
+            client.connect(...this._selectHost(), () => {
               client.write(buffer)
             })
           },
@@ -226,7 +226,7 @@ export default class Service extends EventEmitter {
         )
       })
 
-      client.on('data', function (chunk) {
+      client.on('data', chunk => {
         if (!chunks.length) {
           const arr = Array.prototype.slice.call(chunk.slice(0, 16))
           let i = 0
@@ -244,7 +244,7 @@ export default class Service extends EventEmitter {
         }
       })
 
-      client.on('close', function (err) {
+      client.on('close', err => {
         if (err) {
           return reject(err)
         }

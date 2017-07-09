@@ -92,7 +92,7 @@ export default class Encoder {
     body.write(this._argsType(args))
 
     args.forEach(arg => {
-      body.write(args)
+      body.write(arg)
     })
 
     body.write(this._attachments)
@@ -112,10 +112,10 @@ export default class Encoder {
 
       ret += type.charAt(0) === '['
         ? ~type.indexOf('.')
-          ? '[L' + type.slice(1).replace(/\./gi, '/') + ''
+          ? '[L' + type.slice(1).replace(/\./gi, '/') + ';'
           : '[' + ENUM_TYPE[type.slice(1)]
         : type && ~type.indexOf('.')
-          ? 'L' + type.replace(/\./gi, '/') + ''
+          ? 'L' + type.replace(/\./gi, '/') + ';'
           : ENUM_TYPE[type]
     })
 
