@@ -50,7 +50,7 @@ const dubbo = new Dubbo({
   zookeeper: {
     host          : '10.0.0.100:2181',
 
-    // node-zookeeper-client 的 createClient 方法的 options
+    // node-zookeeper-client 的 createClient 方法的 options，
     sessionTimeout: 30000,
     spinDelay     : 1000,
     retries       : 5
@@ -64,6 +64,17 @@ const dubbo = new Dubbo({
       group,
       version
     }
+  },
+
+  // 1. Object
+  // 对于每一个 service，长连接池的大小
+  // 这些参数会被直接传递给 generic-pool
+  // 2. false
+  // 若不希望使用连接池，则传递 false
+  pool: {
+    max: 200,
+    min: 10,
+    maxWaitingClients: 500
   }
 })
 
@@ -86,9 +97,7 @@ dubbo.service('member')
     }
   }
 })
-.then(({
-  isSuccess
-}) => {
+.then(isSuccess => {
   console.log('is successful', isSuccess)
 })
 
@@ -101,6 +110,85 @@ dubbo.register('order', {
 .invoke('create', ...)
 .then(...)
 ```
+
+## new Dubbo(options)
+
+创建一个 `Dubbo` 实例
+
+**options** `Object`
+
+- **application** `String` 当前应用的名称
+- **root** `String` dubbo 的父节点名
+- **version** `String` 连接的 dubbo 服务使用的 dubbo 版本
+- **zookeeper** `Object`
+  - **host** `String` zookeeper 的地址，格式为 `<ip>[:<port>]`，若端口没有定义，则默认端口为 `2181`
+  - 其他 [`node-zookeeper-client`](https://www.npmjs.com/package/node-zookeeper-client) 的参数，会直接传递
+- **services** `Object.<name:ServiceOptions>` 需要预先注册的 services
+- **pool** `Object` 连接池的 options，它会直接作为参数传递给 [`generic-pool`](https://www.npmjs.com/package/generic-pool)
+
+Returns `Dubbo`
+
+**ServiceOptions** `Object`
+
+- **interface**
+- **timeout**
+- **group**
+- **version**
+
+## dubbo.register(name, serviceOptions)
+
+注册一个 dubbo service，一个被注册过的 service，可以立即调用它的 `service.invoke()` 方法，`dubbo` 与 service 进行 providers 和 consumers 的握手的过程，会被 service 内部的队列处理好。
+
+- **name** `String`
+- **serviceOptions** `ServiceOptions`
+
+Returns `this`
+
+## dubbo.service(name)
+
+获取一个 service，即使一个名为 `name` 的 service，没有被注册过，该方法也会返回一个 `Service` 实例。
+
+但是若一个 service 没有被注册过，那么在调动 `service.invoke()` 方法的时候，会得到一个 `Promise.reject()`
+
+Returns `Service`
+
+
+```js
+// 若 `member` service 没有注册，仍然能够获取一个 member 实例
+const member = dubbo.service('member')
+
+member.isRegistered()
+// false
+
+member.invoke('login', arg).catch(err => {
+  // 但是当调用 invoke 的时候，会得到一个 `SERVICE_NOT_REGISTERED` 的错误
+  console.log(err.code === 'SERVICE_NOT_REGISTERED')
+  // true
+})
+
+// 然后，我们若注册了 member 这个 service
+dubbo.register('member', {
+  interface: '...',
+  ...
+})
+
+// 就可以使用这个 service 了
+member.invoke('login', arg)
+.then(isSuccess => {
+  console.log('is successfull:', isSuccess)
+})
+```
+
+## service.invoke(methodName, ...args)
+
+- **methodName** `String` service 中的方法名，若该方法名不存在，则会得到一个 `Promise.reject`
+- **args** `any` 方法的参数，可传递多个，这里的方法，需要是 java 风格的对象。可以手动拼，或者使用 [`js-to-java`](https://www.npmjs.com/package/js-to-java) module.
+
+```js
+service.invoke('createProduct', product1, product2)
+```
+
+Returns `Promise`
 
 ## License
 
