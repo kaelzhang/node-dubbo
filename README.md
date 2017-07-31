@@ -16,17 +16,13 @@
 
 node.js dubbo/dubbox client with zookeeper support via dubbo default hessian protocol.
 
-想到这个项目基本上只给国人用，就破例稍微接地气一点，下面都写中文文档。
-
-目前仍然在紧锣密鼓的**开发阶段**，请不要在生产环境使用。
-
-预计完成时间为 2017 年 7 月 14 日，届时会包含：
+想到这个项目基本上只给国人用，就破例稍微接地气一点，下面都写中文文档
 
 - TCP 长连接及长连接池
 - 动态的服务注册
-- 不再使用 setTimeout 来确保启动阶段的完成，完全使用 Promise
+- 内部使用队列处理 Service 注册的握手过程，调用者无需关心
 
-第一期是基于 node-zookeeper-dubbo 的核心逻辑
+第一期基于 node-zookeeper-dubbo 的核心逻辑
 
 ## Install
 
@@ -126,7 +122,6 @@ dubbo.register('order', {
 - **services** `Object.<name:ServiceOptions>` 需要预先注册的 services
 - **pool** `Object` 连接池的 options，它会直接作为参数传递给 [`generic-pool`](https://www.npmjs.com/package/generic-pool)
 
-Returns `Dubbo`
 
 **ServiceOptions** `Object`
 
@@ -157,9 +152,6 @@ Returns `Service`
 // 若 `member` service 没有注册，仍然能够获取一个 member 实例
 const member = dubbo.service('member')
 
-member.isRegistered()
-// false
-
 member.invoke('login', arg).catch(err => {
   // 但是当调用 invoke 的时候，会得到一个 `SERVICE_NOT_REGISTERED` 的错误
   console.log(err.code === 'SERVICE_NOT_REGISTERED')
@@ -180,6 +172,8 @@ member.invoke('login', arg)
 ```
 
 ## service.invoke(methodName, ...args)
+
+请求一个 service 方法。
 
 - **methodName** `String` service 中的方法名，若该方法名不存在，则会得到一个 `Promise.reject`
 - **args** `any` 方法的参数，可传递多个，这里的方法，需要是 java 风格的对象。可以手动拼，或者使用 [`js-to-java`](https://www.npmjs.com/package/js-to-java) module.

@@ -8,7 +8,9 @@ const RESPONSE_VALUE          = 1
 const RESPONSE_NULL_VALUE     = 2
 
 
-export default function decode (heap) {
+export default function decode (chunks) {
+  const heap = Buffer.concat(chunks)
+
   let flag, result
 
   if (heap[3] !== RESPONSE_OK) {

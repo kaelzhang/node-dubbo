@@ -1,6 +1,8 @@
 # babel dist
 /lib
 
+no-track.*
+
 # Numerous always-ignore extensions
 *.bak
 *.patch

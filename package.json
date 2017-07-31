@@ -23,7 +23,8 @@
     "client",
     "dubbo-client",
     "rpc",
-    "hessian"
+    "hessian",
+    "pool"
   ],
   "engines": {
     "node": ">=4"
@@ -59,9 +60,11 @@
   "dependencies": {
     "babel-runtime": "^6.23.0",
     "debug": "^2.6.8",
-    "hessian.js": "^2.2.1",
+    "hessian.js": "^2.2.2",
     "ip": "^1.1.5",
     "node-zookeeper-client": "^0.2.2",
-    "semver": "^5.3.0"
+    "once": "^1.4.0",
+    "semver": "^5.3.0",
+    "socket-pool": "^1.0.0"
   }
 }

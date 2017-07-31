@@ -1,10 +1,3 @@
-import {
-  reject,
-  error
-} from './utils'
-import Encoder from './encoder'
-import decode from './decode'
-
 import {EventEmitter} from 'events'
 import qs from 'querystring'
 import url from 'url'
@@ -12,6 +5,13 @@ import net from 'net'
 
 import _debug from 'debug'
 const debug = _debug('dubbo')
+
+import {
+  reject,
+  error
+} from './utils'
+import Client from './client'
+import Encoder from './encoder'
 
 
 const CREATE_MODES = {
@@ -57,7 +57,8 @@ export default class Service extends EventEmitter {
     path: {
       consumer,
       provider
-    }
+    },
+    pool
   }) {
 
     if (this._registered) {
@@ -78,6 +79,9 @@ export default class Service extends EventEmitter {
       version,
       group,
       timeout
+    })
+    this._client = new Client({
+      pool
     })
   }
 
@@ -173,7 +177,6 @@ export default class Service extends EventEmitter {
   _selectHost () {
     return this._hosts[Math.random() * this._hosts.length | 0]
     .split(':')
-    .reverse()
   }
 
   invoke (method, ...args) {
@@ -204,52 +207,16 @@ export default class Service extends EventEmitter {
 
     const buffer = this._encoder.encode(method, args)
 
-    return new Promise((resolve, reject) => {
-      const client = new net.Socket()
-      const chunks = []
-      let heap
-      let bl = 16
+    const [host, port] = this._selectHost()
+    return this._client.request(host, port, buffer)
+    .catch(err => {
+      if (err.code !== 'SOCKET_ERROR') {
+        return Promise.reject(err)
+      }
 
-      client.connect(...this._selectHost(), () => {
-        client.write(buffer)
-      })
-
-      client.on('error', err => {
-        this._initProvider()
-        .then(
-          () => {
-            client.connect(...this._selectHost(), () => {
-              client.write(buffer)
-            })
-          },
-          reject
-        )
-      })
-
-      client.on('data', chunk => {
-        if (!chunks.length) {
-          const arr = Array.prototype.slice.call(chunk.slice(0, 16))
-          let i = 0
-
-          while (i < 3) {
-            bl += arr.pop() * Math.pow(256, i++)
-          }
-        }
-
-        chunks.push(chunk)
-        heap = Buffer.concat(chunks)
-
-        if (heap.length >= bl) {
-          client.destroy()
-        }
-      })
-
-      client.on('close', err => {
-        if (err) {
-          return reject(err)
-        }
-
-        decode(heap).then(resolve, reject)
+      return this._initProvider()
+      .then(() => {
+        return this._invoke(method, args)
       })
     })
   }

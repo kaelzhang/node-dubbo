@@ -13,7 +13,8 @@ export default class Dubbo {
     services = {},
     root = 'dubbo',
     version = '2.5.3.6',
-    zookeeper
+    zookeeper,
+    pool
   }) {
 
     this._root = root
@@ -30,6 +31,8 @@ export default class Dubbo {
       dubbo      : version,
       side       : 'consumer'
     }
+
+    this._pool = pool
 
     const zk = this._zookeeper
              = Zookeeper.createClient(zookeeper.host, zookeeper)
@@ -74,7 +77,8 @@ export default class Dubbo {
         provider: this._providerPath(options)
       },
       zookeeper: this._zookeeper,
-      dubboVersion: this._version
+      dubboVersion: this._version,
+      pool: this._pool
     })
     return this
   }
