@@ -4,6 +4,10 @@ import once from 'once'
 
 import decode from './decode'
 
+const DEFAULT_BUFFER_LENGTH = 16
+const SOCKET_ERROR = 'SOCKET_ERROR'
+const SOCKET_CLOSE_ERROR = 'SOCKET_CLOSE_ERROR'
+
 export default class Client {
   constructor ({
     pool
@@ -31,10 +35,56 @@ export default class Client {
     )
   }
 
-  request (host, port, buffer) {
-    const socket = await
+  _request (...args) {
+    return this._pool
+      ? this._requestWithPool(...args)
+      : this._request(...args)
+  }
+
+  _request (host, port, buffer) {
+    return new Promise((resolve, reject) => {
+      resolve = once(resolve)
+      reject = once(reject)
+
+      const socket = new net.Socket()
+      const chunks = []
+      let bufferLength = DEFAULT_BUFFER_LENGTH
+
+      socket.connect(port, host, () => {
+        client.write(buffer)
+      })
+
+      socket.on('error', err => {
+        err.code = SOCKET_ERROR
+        reject(err)
+      })
+
+      socket.on('data', chunk => {
+        if (!chunks.length) {
+          bufferLength += this._extraLength(chunk)
+        }
+
+        chunks.push(chunk)
+
+        if (heap.length >= bufferLength) {
+          client.destroy()
+        }
+      })
+
+      client.on('close', err => {
+        if (err) {
+          err.code = SOCKET_CLOSE_ERROR
+          return reject(err)
+        }
+
+        decode(chunks).then(resolve, reject)
+      })
+    })
+  }
+
+  _requestWithPool (host, port, buffer) {
     const chunks = []
-    let bufferLength = 16
+    let bufferLength = DEFAULT_BUFFER_LENGTH
 
     return this._acquire(host, port)
     .then(socket => new Promise((resolve, reject) => {
@@ -43,18 +93,13 @@ export default class Client {
 
       socket.on('error', err => {
         socket.destroy()
-        err.code = 'SOCKET_ERROR'
+        err.code = SOCKET_ERROR
         reject(err)
       })
 
       socket.on('data', chunk => {
         if (!chunks.length) {
-          const arr = Array.prototype.slice.call(chunk.slice(0, 16))
-          let i = 0
-
-          while (i < 3) {
-            bufferLength += arr.pop() * Math.pow(256, i++)
-          }
+          bufferLength += this._extraLength(chunk)
         }
 
         chunks.push(chunk)
@@ -67,5 +112,17 @@ export default class Client {
 
       socket.write(buffer)
     }))
+  }
+
+  _extraLength (chunk) {
+    const arr = Array.prototype.slice.call(chunk.slice(0, 16))
+    let i = 0
+    let extra = 0
+
+    while (i < 3) {
+      extra += arr.pop() * Math.pow(256, i++)
+    }
+
+    return extra
   }
 }

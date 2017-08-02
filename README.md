@@ -120,7 +120,7 @@ dubbo.register('order', {
   - **host** `String` zookeeper 的地址，格式为 `<ip>[:<port>]`，若端口没有定义，则默认端口为 `2181`
   - 其他 [`node-zookeeper-client`](https://www.npmjs.com/package/node-zookeeper-client) 的参数，会直接传递
 - **services** `Object.<name:ServiceOptions>` 需要预先注册的 services
-- **pool** `Object` 连接池的 options，它会直接作为参数传递给 [`generic-pool`](https://www.npmjs.com/package/generic-pool)
+- **pool** `Object|false` 连接池的 options，它会直接作为参数传递给 [`generic-pool`](https://www.npmjs.com/package/generic-pool)
 
 
 **ServiceOptions** `Object`
