@@ -20,7 +20,9 @@ const extraLength = chunk => {
   return extra
 }
 
-const throws = name => throw new Error(`${name} must be implemented`)
+const throws = name => {
+  throw new Error(`${name} must be implemented`)
+}
 
 class RequestBase {
   constructor ({
@@ -80,7 +82,7 @@ class RequestBase {
       })
 
       this._write()
-    }))
+    })
   }
 }
 

@@ -1,17 +1,14 @@
 import semver from 'semver'
 
-
 export function error (message, code) {
   const e = new Error(message)
   e.code = code
   return e
 }
 
-
 export function reject (message, code) {
   return Promise.reject(error(message, code))
 }
-
 
 const STR_DOT = '.'
 

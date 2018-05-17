@@ -6,7 +6,6 @@ import ip from 'ip'
 
 import Service from './service'
 
-
 export default class Dubbo {
   constructor ({
     application,

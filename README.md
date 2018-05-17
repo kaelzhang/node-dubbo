@@ -22,8 +22,6 @@ node.js dubbo/dubbox client with zookeeper support via dubbo default hessian pro
 - 动态的服务注册
 - 内部使用队列处理 Service 注册的握手过程，调用者无需关心
 
-第一期基于 node-zookeeper-dubbo 的核心逻辑
-
 ## Install
 
 ```sh

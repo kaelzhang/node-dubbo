@@ -10,7 +10,6 @@ import {reject, error} from './utils'
 import {Client, ClientWithPool} from './client'
 import Encoder from './encoder'
 
-
 const CREATE_MODES = {
 
   // The znode will not be automatically deleted upon client's disconnect.
@@ -28,9 +27,7 @@ const CREATE_MODES = {
   EPHEMERAL_SEQUENTIAL: 3
 }
 
-
 export default class Service extends EventEmitter {
-
   constructor (name) {
     super()
 
