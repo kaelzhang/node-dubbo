@@ -6,11 +6,8 @@ import net from 'net'
 import _debug from 'debug'
 const debug = _debug('dubbo')
 
-import {
-  reject,
-  error
-} from './utils'
-import Client from './client'
+import {reject, error} from './utils'
+import {Client, ClientWithPool} from './client'
 import Encoder from './encoder'
 
 
@@ -80,9 +77,9 @@ export default class Service extends EventEmitter {
       group,
       timeout
     })
-    this._client = new Client({
-      pool
-    })
+    this._client = pool
+      ? new ClientWithPool(pool)
+      : new Client()
   }
 
   // Setup service

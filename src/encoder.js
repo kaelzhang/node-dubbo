@@ -1,10 +1,5 @@
-import {
-  EncoderV2
-} from 'hessian.js'
-
-import {
-  gte
-} from './utils'
+import {EncoderV2} from 'hessian.js'
+import {gte} from './utils'
 
 // 8 * 1024 * 1024 default body max length
 const DEFAULT_LEN  = 8388608
