@@ -3,6 +3,9 @@
 # babel dist
 /lib
 
+# node
+package-lock.json
+
 no-track.*
 
 # Numerous always-ignore extensions
