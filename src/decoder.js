@@ -5,9 +5,7 @@ const RESPONSE_WITH_EXCEPTION = 0
 const RESPONSE_VALUE          = 1
 const RESPONSE_NULL_VALUE     = 2
 
-export default function decode (chunks) {
-  const heap = Buffer.concat(chunks)
-
+export default function decode (heap) {
   let flag, result
 
   if (heap[3] !== RESPONSE_OK) {

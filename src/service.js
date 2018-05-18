@@ -1,7 +1,6 @@
 import {EventEmitter} from 'events'
 import qs from 'querystring'
 import url from 'url'
-import net from 'net'
 
 import _debug from 'debug'
 const debug = _debug('dubbo')
@@ -74,9 +73,10 @@ export default class Service extends EventEmitter {
       group,
       timeout
     })
+
     this._client = pool
       ? new ClientWithPool(pool)
-      : new Client()
+      : new Client
   }
 
   // Setup service
@@ -200,8 +200,8 @@ export default class Service extends EventEmitter {
     }
 
     const buffer = this._encoder.encode(method, args)
-
     const [host, port] = this._selectHost()
+
     return this._client.request(host, port, buffer)
     .catch(err => {
       if (err.code !== 'SOCKET_ERROR') {

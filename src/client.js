@@ -1,4 +1,6 @@
 // Socket client with connection pool
+import net from 'net'
+
 import Pool from 'socket-pool'
 import once from 'once'
 
@@ -59,6 +61,7 @@ class RequestBase {
       this._reject = reject = once(reject)
 
       let bufferLength = DEFAULT_BUFFER_LENGTH
+      const socket = this._socket
 
       socket.on('error', err => {
         socket.destroy()
@@ -67,11 +70,12 @@ class RequestBase {
       })
 
       socket.on('data', chunk => {
+        const chunks = this._chunks
+
         if (!chunks.length) {
           bufferLength += extraLength(chunk)
         }
 
-        const chunks = this._chunks
         chunks.push(chunk)
 
         const heap = this._heap = Buffer.concat(chunks)
@@ -99,7 +103,7 @@ class Request extends RequestBase {
       this._decode()
     })
 
-    socket.connect(this._host, this._port, () => {
+    socket.connect(this._port, this._host, () => {
       socket.write(this._buffer)
     })
   }
@@ -131,12 +135,14 @@ class ClientBase {
 
   request (host, port, buffer) {
     return Promise.resolve(this._socket(host, port))
-    .then(socket => new this._Request({
-      socket,
-      host,
-      port,
-      buffer
-    }).start())
+    .then(socket =>
+      new this._Request({
+        socket,
+        host,
+        port,
+        buffer
+      }).start()
+    )
   }
 }
 
