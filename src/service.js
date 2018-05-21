@@ -5,26 +5,11 @@ import url from 'url'
 import _debug from 'debug'
 const debug = _debug('dubbo')
 
+import {Exception, CreateMode} from 'node-zookeeper-client'
+
 import {reject, error} from './utils'
 import {Client, ClientWithPool} from './client'
 import Encoder from './encoder'
-
-const CREATE_MODES = {
-
-  // The znode will not be automatically deleted upon client's disconnect.
-  PERSISTENT: 0,
-
-  // The znode will not be automatically deleted upon client's disconnect,
-  // and its name will be appended with a monotonically increasing number.
-  PERSISTENT_SEQUENTIAL: 2,
-
-  // The znode will be deleted upon the client's disconnect.
-  EPHEMERAL: 1,
-
-  // The znode will be deleted upon the client's disconnect, and its name
-  // will be appended with a monotonically increasing number.
-  EPHEMERAL_SEQUENTIAL: 3
-}
 
 export default class Service extends EventEmitter {
   constructor (name) {
@@ -108,7 +93,12 @@ export default class Service extends EventEmitter {
           return resolve()
         }
 
-        zk.create(consumer, CREATE_MODES.EPHEMERAL, (err, node) => {
+        zk.create(consumer, CreateMode.EPHEMERAL, (err, node) => {
+          // Skip node exists error for concurrency
+          if (err && err.getCode() === Exception.NODE_EXISTS) {
+            return resolve()
+          }
+
           if (err) {
             return reject(err)
           }

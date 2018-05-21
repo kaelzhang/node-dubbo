@@ -90,6 +90,7 @@ class RequestBase {
   }
 }
 
+// Basic request for normal single-use socket connection
 class Request extends RequestBase {
   _write () {
     const socket = this._socket
@@ -113,6 +114,7 @@ class Request extends RequestBase {
   }
 }
 
+// Request for reusable socket
 class RequestForPool extends RequestBase {
   _write () {
     this._socket.write(this._buffer)
@@ -146,6 +148,7 @@ class ClientBase {
   }
 }
 
+// With normal single-use socket
 export class Client extends ClientBase {
   constructor () {
     super(Request)
@@ -156,6 +159,7 @@ export class Client extends ClientBase {
   }
 }
 
+// With socket pool
 export class ClientWithPool extends ClientBase {
   constructor (pool) {
     super(RequestForPool)
