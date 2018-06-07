@@ -1,13 +1,14 @@
 {
   "name": "dubbo",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "node.js dubbo/dubbox client with zookeeper support via dubbo default hessian protocol",
   "main": "lib/index.js",
   "module": "src/index.js",
   "scripts": {
     "build": "babel src --out-dir lib",
     "test": "npm run build && node --harmony ./node_modules/.bin/ava --verbose --timeout=10s",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "run": "npm run build && node no-track/member.js"
   },
   "files": [
     "lib/"
@@ -58,6 +59,6 @@
     "node-zookeeper-client": "^0.2.2",
     "once": "^1.4.0",
     "semver": "^5.5.0",
-    "socket-pool": "^1.2.2"
+    "socket-pool": "^1.2.3"
   }
 }

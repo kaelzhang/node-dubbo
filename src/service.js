@@ -20,6 +20,9 @@ export default class Service extends EventEmitter {
     this._methods = {}
     this._setupError = null
     this._ready = false
+
+    // Unlimited listeners to prevent memleak warning
+    this.setMaxListeners(0)
   }
 
   // Register service informations
