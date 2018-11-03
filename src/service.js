@@ -140,7 +140,7 @@ export default class Service extends EventEmitter {
 
     const available = children
     .map(child => qs.parse(decodeURIComponent(child)))
-    .filter(zoo => zoo.version === this._version && zoo.group === this._group)
+    .filter(zoo => (zoo.version || zoo['default.version']) === this._version && (zoo.group || zoo['default.group']) === this._group)
 
     if (!available.length) {
       return reject(
